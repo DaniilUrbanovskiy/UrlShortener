@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace UrlShortener.DataAccess
 {
-
     public static class AppsettingsProvider
     {
         public static IConfigurationRoot GetJsonAppsettingsFile() => new ConfigurationBuilder()
-            .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
-            .AddJsonFile("appsettings.json", false)
-            .Build();
-    }   
+           .SetBasePath(Directory.GetParent(AppContext.BaseDirectory).FullName)
+           .AddJsonFile("appsettings.json", false)
+           .Build();
+    }
 }
