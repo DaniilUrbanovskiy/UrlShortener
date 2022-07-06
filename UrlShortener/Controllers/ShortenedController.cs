@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using UrlShortener.Services;
 namespace UrlShortener.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class ShortenedController : ControllerBase
     {
@@ -24,7 +26,7 @@ namespace UrlShortener.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
+        [HttpPost("SetAuto")]
         public async Task<IActionResult> SetUrlAuto(string url) 
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;          
@@ -39,7 +41,7 @@ namespace UrlShortener.Controllers
             }           
         }
 
-        [HttpPost]
+        [HttpPost("SetByYourself")]
         public async Task<IActionResult> SetUrlByYourself(string url, string shortUrl)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -54,7 +56,7 @@ namespace UrlShortener.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("GetUrls")]
         public IActionResult GetUserUrls()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -62,14 +64,14 @@ namespace UrlShortener.Controllers
             return Ok(urlList);
         }
 
-        [HttpGet]
+        [HttpGet("GetUrlInfo")]
         public IActionResult GetUrlInfo(string shortUrl) 
         {
             var url = _urlService.GetUrlInfo(shortUrl);
             return Ok(url);
         }
 
-        [HttpDelete]
+        [HttpDelete("RemoveUrl")]
         public IActionResult RemoveUrl(string shortUrl) 
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -78,6 +80,7 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public override RedirectResult Redirect([FromQuery]string shortUrl) 
         {
             var url = _urlService.UrlForRedirect(shortUrl);

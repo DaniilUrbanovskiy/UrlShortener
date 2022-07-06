@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using System.Linq;
 
 namespace UrlShortener.Api.Configurations
 {
@@ -12,9 +14,10 @@ namespace UrlShortener.Api.Configurations
             {
                 swagger.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "CityInfo.API",
+                    Title = "UrlShortener.API",
                     Version = "v1"
                 });
+                swagger.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
                 swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
@@ -44,7 +47,7 @@ namespace UrlShortener.Api.Configurations
         public static void UseCustomSwagger(this IApplicationBuilder app)
         {
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CityInfo.Api v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UrlShortener.Api v1"));
         }
     }
 }

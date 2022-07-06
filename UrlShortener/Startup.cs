@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using System.Linq;
 using UrlShortener.Api.Configurations;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.DataAccess;
@@ -12,15 +11,8 @@ using UrlShortener.Services;
 
 namespace UrlShortener
 {
-    public class Startup
+    public record Startup(IConfiguration Configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();

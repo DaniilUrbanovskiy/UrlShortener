@@ -12,7 +12,6 @@ using UrlShortener.Services;
 namespace UrlShortener.Api.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
     public class UserController : ControllerBase
     {

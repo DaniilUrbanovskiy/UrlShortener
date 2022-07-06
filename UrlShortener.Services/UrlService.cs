@@ -24,12 +24,7 @@ namespace UrlShortener.Services
             {
                 throw new ArgumentException("Wrong url!");    
             }
-
-            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
-            {
-                throw new ArgumentException("Url already exists in your table!");
-            }
+           
             var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
             await _context.Urls.AddAsync(new Url()
             {
@@ -37,7 +32,14 @@ namespace UrlShortener.Services
                 CreateDate = DateTime.Now,
                 CreatedBy = userName,
                 ShortUrl = ShortUrlBaseAdress + shortUrl
-            });            
+            });
+            await _context.SaveChangesAsync();
+
+            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + shortUrl)?.Id;
+            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
+            {
+                throw new ArgumentException("Url already exists in your table!");
+            }
             await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();            
         }
