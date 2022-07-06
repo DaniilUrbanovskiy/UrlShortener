@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UrlShortener.Api.Infrastructure;
 using UrlShortener.DataAccess;
+using UrlShortener.Services;
 
 namespace UrlShortener
 {
@@ -32,7 +34,9 @@ namespace UrlShortener
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShortener", Version = "v1" });
             });
+            services.AddTransient<UrlService>();
             services.AddDbContext<SqlContext>(x => x.UseSqlServer(Configuration.GetConnectionString("SqlContext")));
+            services.AddAutoMapper(typeof(ApiMappingProfile));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
