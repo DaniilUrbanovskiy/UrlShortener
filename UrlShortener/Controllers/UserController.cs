@@ -5,6 +5,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using UrlShortener.Api.Dto.Requests;
+using UrlShortener.Api.Dto.Responses;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.Domain.Entities;
 using UrlShortener.Services;
@@ -47,8 +48,12 @@ namespace UrlShortener.Api.Controllers
             try
             {
                 var user = await _userService.Login(userInfo.Login, userInfo.Password);
-                var token = JwtHealper.CreateToken(user);
-                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                var response = JwtHealper.CreateToken(user);
+                var token = new TokenResponse()
+                {
+                    Token = new JwtSecurityTokenHandler().WriteToken(response)
+                };
+                return Ok(token);
             }
             catch (Exception ex)
             {
