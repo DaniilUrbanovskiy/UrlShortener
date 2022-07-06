@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using UrlShortener.Api.Dto.Requests;
+using UrlShortener.Api.Infrastructure;
 using UrlShortener.Domain.Entities;
 using UrlShortener.Services;
 
@@ -25,7 +27,7 @@ namespace UrlShortener.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("registr")]
-        public async Task<IActionResult> Registr([FromBody] UserRegisterRequest userInfo)
+        public async Task<IActionResult> Registr([FromBody] UserRegistrRequest userInfo)
         {
             try
             {

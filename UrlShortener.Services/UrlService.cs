@@ -17,7 +17,7 @@ namespace UrlShortener.Services
             _context = context;           
         }
 
-        public async Task AddUrlsAuto(string url, User user)
+        public async Task AddUrlsAuto(string url, int userId)
         {
             string shortUrl = UrlConverter(url);          
             if (String.IsNullOrEmpty(shortUrl)) 
@@ -26,23 +26,23 @@ namespace UrlShortener.Services
             }
 
             var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == user.Id))
+            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
             {
                 throw new ArgumentException("Url already exists in your table!");
             }
-
+            var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
             await _context.Urls.AddAsync(new Url()
             {
                 LongUrl = url,
                 CreateDate = DateTime.Now,
-                CreatedBy = user.Name,
+                CreatedBy = userName,
                 ShortUrl = ShortUrlBaseAdress + shortUrl
             });            
-            await _context.UserUrl.AddAsync(new UserUrl(user.Id, (int)urlId));
+            await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();            
         }
 
-        public async Task AddUrlsByYourself(string url, string shortUrl, User user)
+        public async Task AddUrlsByYourself(string url, string shortUrl, int userId)
         {
             if (String.IsNullOrEmpty(shortUrl) || String.IsNullOrEmpty(url))
             {
@@ -50,19 +50,19 @@ namespace UrlShortener.Services
             }
 
             var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == user.Id))
+            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
             {
                 throw new ArgumentException("Url already exists in your table!");
             }
-
+            var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
             await _context.Urls.AddAsync(new Url()
             {
                 LongUrl = url,
                 CreateDate = DateTime.Now,
-                CreatedBy = user.Name,
+                CreatedBy = userName,
                 ShortUrl = ShortUrlBaseAdress + shortUrl
             });
-            await _context.UserUrl.AddAsync(new UserUrl(user.Id, (int)urlId));
+            await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();
         }
 
