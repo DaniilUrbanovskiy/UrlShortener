@@ -22,6 +22,7 @@ namespace UrlShortener
             services.AddDbContext<SqlContext>(x => x.UseSqlServer(Configuration.GetConnectionString("SqlContext")));
             services.AddJWTAuthorization(Configuration);
             services.AddAutoMapper(typeof(ApiMappingProfile));
+            services.AddCors(x => x.AddPolicy(string.Empty, y => y.AllowAnyMethod().AllowAnyHeader()));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

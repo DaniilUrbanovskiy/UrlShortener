@@ -33,8 +33,7 @@ namespace UrlShortener.Services
                 CreatedBy = userName,
                 ShortUrl = ShortUrlBaseAdress + shortUrl
             });
-            await _context.SaveChangesAsync();
-
+          
             var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + shortUrl)?.Id;
             if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
             {
