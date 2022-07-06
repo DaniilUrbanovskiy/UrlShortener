@@ -79,12 +79,13 @@ namespace UrlShortener.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpGet]
+        [Route("{shortUrl}")]
         [AllowAnonymous]
-        public override RedirectResult Redirect([FromQuery]string shortUrl) 
+        public RedirectResult Redirect([FromRoute]string shortUrl) 
         {
-            var url = _urlService.UrlForRedirect(shortUrl);
-            return RedirectPermanent(url);
+            //var url = _urlService.UrlForRedirect(shortUrl);
+            return Redirect("google.com");
         }
     }
 }
