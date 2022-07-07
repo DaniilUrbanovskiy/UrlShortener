@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace UrlShortener.Api.Controllers
 {
@@ -7,7 +6,14 @@ namespace UrlShortener.Api.Controllers
     {
         public ActionResult Index(string url)
         {
-            return Redirect(url);
+            try
+            {
+                return Redirect(url);
+            }
+            catch (System.Exception)
+            {
+                return BadRequest("Wrong url!");
+            }        
         }
     }
 }

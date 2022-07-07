@@ -10,7 +10,7 @@ namespace UrlShortener.Services
 {
     public class UrlService
     {
-        private readonly string ShortUrlBaseAdress = "http://localhost:44376/shortened/";
+        private readonly string ShortUrlBaseAdress = "https://shortener-test.azurewebsites.net/shortened/";
         private readonly SqlContext _context;
         public UrlService(SqlContext context)
         {
