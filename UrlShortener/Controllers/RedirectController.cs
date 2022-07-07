@@ -9,11 +9,11 @@ namespace UrlShortener.Api.Controllers
         {
             try
             {
-                return Redirect(url.Replace("\"",""));
+                return Redirect(url);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                return BadRequest("Wrong url!");
+                return BadRequest(ex.Message);
             }        
         }
     }
