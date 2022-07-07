@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace UrlShortener.Api.Controllers
 {
@@ -8,7 +9,7 @@ namespace UrlShortener.Api.Controllers
         {
             try
             {
-                return Redirect(url);
+                return Redirect("https://www.youtube.com/");
             }
             catch (System.Exception)
             {
