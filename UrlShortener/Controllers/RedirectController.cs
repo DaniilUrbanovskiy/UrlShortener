@@ -9,7 +9,7 @@ namespace UrlShortener.Api.Controllers
         {
             try
             {
-                return Redirect("https://www.youtube.com/");
+                return Redirect(url.Replace("\"",""));
             }
             catch (System.Exception)
             {

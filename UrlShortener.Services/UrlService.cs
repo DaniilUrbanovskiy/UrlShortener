@@ -87,10 +87,12 @@ namespace UrlShortener.Services
         {
             try
             {
-                var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
+                var url = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl);
+                var userUrl = _context.UserUrl.FirstOrDefault(x => x.UrlId == url.Id && x.UserId == userId);
 
-                var url = _context.UserUrl.FirstOrDefault(x => x.UrlId == urlId && x.UserId == userId);
-                _context.UserUrl.Remove(url);
+                _context.UserUrl.Remove(userUrl);
+                _context.Urls.Remove(url);
+
                 _context.SaveChanges();
                 return HttpStatusCode.OK;
             }

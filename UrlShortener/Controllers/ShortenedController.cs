@@ -28,9 +28,9 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost("SetAuto")]
-        public async Task<IActionResult> SetUrlAuto(string url) 
+        public async Task<IActionResult> SetUrlAuto(string url)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;          
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             try
             {
                 await _urlService.AddUrlsAuto(url, int.Parse(userId));
@@ -39,7 +39,7 @@ namespace UrlShortener.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }           
+            }
         }
 
         [HttpPost("SetByYourself")]
@@ -66,14 +66,14 @@ namespace UrlShortener.Controllers
         }
 
         [HttpGet("GetUrlInfo")]
-        public IActionResult GetUrlInfo(string shortUrl) 
+        public IActionResult GetUrlInfo(string shortUrl)
         {
             var url = _urlService.GetUrlInfo(shortUrl);
             return Ok(url);
         }
 
         [HttpDelete("RemoveUrl")]
-        public IActionResult RemoveUrl(string shortUrl) 
+        public IActionResult RemoveUrl(string shortUrl)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var statusCode = _urlService.RemoveUrls(int.Parse(userId), shortUrl);
@@ -84,16 +84,16 @@ namespace UrlShortener.Controllers
             else
             {
                 return BadRequest("Wrong url!");
-            }
+            }          
         }
 
         [HttpGet]
         [Route("{shortUrl}")]
         [AllowAnonymous]
-        public IActionResult RedirectUser([FromRoute]string shortUrl) 
+        public IActionResult RedirectUser([FromRoute] string shortUrl)
         {
             var url = _urlService.UrlForRedirect(shortUrl.Replace("%2F", "/"));
-            return RedirectToAction("Index","Redirect", new { url });
+            return RedirectToAction("Index", "Redirect", new { url });
         }
     }
 }
