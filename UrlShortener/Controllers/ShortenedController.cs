@@ -92,7 +92,7 @@ namespace UrlShortener.Controllers
         [AllowAnonymous]
         public IActionResult RedirectUser([FromRoute] string shortUrl)
         {
-            var url = _urlService.UrlForRedirect(shortUrl.Replace("%2F", "/"));
+            var url = "https://google.com";
             return RedirectToAction("Index", "Redirect", new { url });
         }
     }
