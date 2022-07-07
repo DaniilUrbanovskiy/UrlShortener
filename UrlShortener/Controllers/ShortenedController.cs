@@ -92,10 +92,6 @@ namespace UrlShortener.Controllers
         [AllowAnonymous]
         public IActionResult RedirectUser([FromRoute] string shortUrl)
         {
-            if (shortUrl.Contains("%")) 
-            {
-                shortUrl = shortUrl.Replace("%2F", "/");
-            }
             var url = _urlService.UrlForRedirect(shortUrl);
             return RedirectToAction("Index", "Redirect", new { url });
         }
