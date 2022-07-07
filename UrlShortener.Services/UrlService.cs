@@ -104,7 +104,7 @@ namespace UrlShortener.Services
 
         public string UrlForRedirect(string url) 
         {
-            var result = _context.Urls.FirstOrDefault(x => x.ShortUrl == url.Replace("%2F", "/"))?.LongUrl;
+            var result = _context.Urls.FirstOrDefault(x => x.ShortUrl == url)?.LongUrl;
             return result;  
         }
         
