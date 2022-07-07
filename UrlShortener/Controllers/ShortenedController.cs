@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using UrlShortener.Domain.Entities;
@@ -75,17 +76,24 @@ namespace UrlShortener.Controllers
         public IActionResult RemoveUrl(string shortUrl) 
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            _urlService.RemoveUrls(int.Parse(userId), shortUrl);
-            return Ok();
+            var statusCode = _urlService.RemoveUrls(int.Parse(userId), shortUrl);
+            if (statusCode == HttpStatusCode.OK)
+            {
+                return Ok("Success!");
+            }
+            else
+            {
+                return BadRequest("Wrong url!");
+            }
         }
 
         [HttpGet]
         [Route("{shortUrl}")]
         [AllowAnonymous]
-        public RedirectResult Redirect([FromRoute]string shortUrl) 
+        public IActionResult RedirectUser([FromRoute]string shortUrl) 
         {
             //var url = _urlService.UrlForRedirect(shortUrl);
-            return Redirect("google.com");
+            return RedirectToAction("Index","Home");
         }
     }
 }

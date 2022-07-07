@@ -48,11 +48,9 @@ namespace UrlShortener.Api.Controllers
             try
             {
                 var user = await _userService.Login(userInfo.Login, userInfo.Password);
-                var response = JwtHealper.CreateToken(user);
-                var token = new TokenResponse()
-                {
-                    Token = new JwtSecurityTokenHandler().WriteToken(response)
-                };
+                var tokenResponse = JwtHealper.CreateToken(user);
+                var token = new TokenResponse(new JwtSecurityTokenHandler().WriteToken(tokenResponse));
+
                 return Ok(token);
             }
             catch (Exception ex)

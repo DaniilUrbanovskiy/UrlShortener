@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace UrlShortener.Services
             _context = context;
         }
 
-        public Task Registration(User user)
+        public async Task Registration(User user)
         {
             var isExist = _context.Users.Any(u => u.Login == user.Login);
 
@@ -24,20 +25,19 @@ namespace UrlShortener.Services
             {
                 throw new Exception("This login already exists!");
             }
-            _context.Add(user);
-            _context.SaveChanges();
-            return Task.CompletedTask;
+            await _context.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<User> Login(string login, string password)
+        public async Task<User> Login(string login, string password)
         {
-            var user = _context.Users.Where(u => u.Login == login && u.Password == password).FirstOrDefault();
+            var user = await _context.Users.Where(u => u.Login == login && u.Password == password).FirstOrDefaultAsync();
 
             if (user == null)
             {
                 throw new Exception("Invalid login or password");
             }
-            return Task.FromResult(user);
+            return user;
         }
     }
 }

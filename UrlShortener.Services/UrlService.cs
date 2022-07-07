@@ -50,12 +50,7 @@ namespace UrlShortener.Services
             {
                 throw new ArgumentException("Wrong url!");
             }
-
-            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
-            {
-                throw new ArgumentException("Url already exists in your table!");
-            }
+         
             var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
             await _context.Urls.AddAsync(new Url()
             {
@@ -64,6 +59,13 @@ namespace UrlShortener.Services
                 CreatedBy = userName,
                 ShortUrl = ShortUrlBaseAdress + shortUrl
             });
+            await _context.SaveChangesAsync();
+
+            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + shortUrl)?.Id;
+            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
+            {
+                throw new ArgumentException("Url already exists in your table!");
+            }
             await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();
         }
@@ -81,20 +83,29 @@ namespace UrlShortener.Services
             return urlInfo;
         }
 
-        public void RemoveUrls(int userId, string shortUrl)
+        public HttpStatusCode RemoveUrls(int userId, string shortUrl)
         {
-            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
+            try
+            {
+                var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl)?.Id;
 
-            var url = _context.UserUrl.FirstOrDefault(x => x.UrlId == urlId && x.UserId == userId);
-            _context.UserUrl.Remove(url);
-            _context.SaveChanges();
+                var url = _context.UserUrl.FirstOrDefault(x => x.UrlId == urlId && x.UserId == userId);
+                _context.UserUrl.Remove(url);
+                _context.SaveChanges();
+                return HttpStatusCode.OK;
+            }
+            catch (Exception)
+            {
+                return HttpStatusCode.BadRequest;
+            }        
         }
 
         public string UrlForRedirect(string url) 
         {
-            return _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + url).LongUrl;
+            var result = _context.Urls.FirstOrDefault(x => x.ShortUrl == url.Replace("%2F", "/"))?.LongUrl;
+            return result;  
         }
-
+        
         private string UrlConverter(string url) 
         {
             Random random = new Random();
