@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace UrlShortener.Api.Controllers
 {
-    public class HomeController : Controller
+    public class RedirectController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string url)
         {
-            return Redirect("http://www.google.com");
+            return Redirect(url);
         }
     }
 }

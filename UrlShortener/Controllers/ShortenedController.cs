@@ -92,8 +92,8 @@ namespace UrlShortener.Controllers
         [AllowAnonymous]
         public IActionResult RedirectUser([FromRoute]string shortUrl) 
         {
-            //var url = _urlService.UrlForRedirect(shortUrl);
-            return RedirectToAction("Index","Home");
+            var url = _urlService.UrlForRedirect(shortUrl);
+            return RedirectToAction("Index","Home", url);
         }
     }
 }
