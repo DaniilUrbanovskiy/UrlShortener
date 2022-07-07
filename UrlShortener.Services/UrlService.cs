@@ -119,7 +119,8 @@ namespace UrlShortener.Services
                 {
                     result = result + urlElementsArray[urlElementsArray.Length - 1 - i].ToString() + random.Next(0, 10);
                 }
-                return result;
+               
+                return result.Replace("/", DateTime.Now.Second.ToString());
             }
             catch (Exception)
             {
