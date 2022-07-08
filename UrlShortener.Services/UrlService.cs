@@ -10,7 +10,7 @@ namespace UrlShortener.Services
 {
     public class UrlService
     {
-        private readonly string ShortUrlBaseAdress = "https://shortener-test.azurewebsites.net/shortened/";
+        private readonly string ShortUrlBaseAdress = "https://shortener-test.azurewebsites.net/shortened/";//TODO: Move to appsettings.json
         private readonly SqlContext _context;
         public UrlService(SqlContext context)
         {
@@ -39,6 +39,7 @@ namespace UrlShortener.Services
             if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
             {
                 throw new ArgumentException("Url already exists in your table!");
+                //TODO: Remove url from [Urls] table 
             }
             await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();            
@@ -65,6 +66,7 @@ namespace UrlShortener.Services
             if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
             {
                 throw new ArgumentException("Url already exists in your table!");
+                //TODO: Remove url from [Urls] table 
             }
             await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
             await _context.SaveChangesAsync();
@@ -83,16 +85,16 @@ namespace UrlShortener.Services
             return urlInfo;
         }
 
-        public HttpStatusCode RemoveUrls(int userId, string shortUrl)
+        public HttpStatusCode RemoveUrls(int userId, string shortUrl)//TODO: Change returned type
         {
             try
-            {
+            {//TODO: Reomove try-catch block and validate with "if" conditions
                 var url = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl);
                 var userUrl = _context.UserUrl.FirstOrDefault(x => x.UrlId == url.Id && x.UserId == userId);
 
                 _context.UserUrl.Remove(userUrl);
                 _context.Urls.Remove(url);
-
+                //TODO: Add cascade delete
                 _context.SaveChanges();
                 return HttpStatusCode.OK;
             }
@@ -105,7 +107,7 @@ namespace UrlShortener.Services
         public string UrlForRedirect(string url) 
         {
             var result = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + url)?.LongUrl;
-            return result;  
+            return result;//TODO: Return "url" if result is null
         }
         
         private string UrlConverter(string url) 
@@ -124,7 +126,7 @@ namespace UrlShortener.Services
             }
             catch (Exception)
             {
-                return null;
+                return null;//TODO: return exeption message
             }                    
         }
     }

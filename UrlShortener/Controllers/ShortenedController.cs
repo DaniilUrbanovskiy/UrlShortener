@@ -16,7 +16,7 @@ namespace UrlShortener.Controllers
     [Route("[controller]")]
     public class ShortenedController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly UserService _userService;//TODO: Remove what not used
         private readonly UrlService _urlService;
         private readonly IMapper _mapper;
 
@@ -43,7 +43,7 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost("SetByYourself")]
-        public async Task<IActionResult> SetUrlByYourself(string url, string shortUrl)
+        public async Task<IActionResult> SetUrlByYourself(string url, string shortUrl)//TODO: Create request DTO
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             try
