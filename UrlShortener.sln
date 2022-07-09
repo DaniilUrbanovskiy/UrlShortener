@@ -3,22 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Api", "UrlShortener\UrlShortener.Api.csproj", "{6A36F592-2618-499E-9FB1-5B868CA303F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Api", "UrlShortener\UrlShortener.Api.csproj", "{6A36F592-2618-499E-9FB1-5B868CA303F2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B9AD1DAD-FED0-4C30-9A4D-351E305E650F} = {B9AD1DAD-FED0-4C30-9A4D-351E305E650F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.DataAccess", "UrlShortener.DataAccess\UrlShortener.DataAccess.csproj", "{2EFF109B-CC2C-44FB-AD0A-109150F9461D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15} = {A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.DataAccess", "UrlShortener.DataAccess\UrlShortener.DataAccess.csproj", "{2EFF109B-CC2C-44FB-AD0A-109150F9461D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Services", "UrlShortener.Services\UrlShortener.Services.csproj", "{B9AD1DAD-FED0-4C30-9A4D-351E305E650F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UrlShortener.Services", "UrlShortener.Services\UrlShortener.Services.csproj", "{B9AD1DAD-FED0-4C30-9A4D-351E305E650F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2EFF109B-CC2C-44FB-AD0A-109150F9461D} = {2EFF109B-CC2C-44FB-AD0A-109150F9461D}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UrlShortener.Domain", "UrlShortener.Domain\UrlShortener.Domain.csproj", "{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +33,6 @@ Global
 		{B9AD1DAD-FED0-4C30-9A4D-351E305E650F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9AD1DAD-FED0-4C30-9A4D-351E305E650F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9AD1DAD-FED0-4C30-9A4D-351E305E650F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A158D8E0-0361-4A53-8BC4-A6BF01C5FF15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

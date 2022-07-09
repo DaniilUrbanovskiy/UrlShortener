@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using UrlShortener.Services;
@@ -15,12 +13,10 @@ namespace UrlShortener.Controllers
     public class ShortenedController : ControllerBase
     {
         private readonly UrlService _urlService;
-        private readonly IMapper _mapper;
 
-        public ShortenedController(UrlService urlService, IMapper mapper)
+        public ShortenedController(UrlService urlService)
         {
             _urlService = urlService;
-            _mapper = mapper;
         }
 
         [HttpPost("SetAuto")]
@@ -39,7 +35,7 @@ namespace UrlShortener.Controllers
         }
 
         [HttpPost("SetByYourself")]
-        public async Task<IActionResult> SetUrlByYourself(string url, string shortUrl)//TODO: Create request DTO
+        public async Task<IActionResult> SetUrlByYourself(string url, string shortUrl)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             try
@@ -62,9 +58,9 @@ namespace UrlShortener.Controllers
         }
 
         [HttpGet("GetUrlInfo")]
-        public IActionResult GetUrlInfo(string shortUrl)
+        public async Task<IActionResult> GetUrlInfo(string shortUrl)
         {
-            var url = _urlService.GetUrlInfo(shortUrl);
+            var url = await _urlService.GetUrlInfo(shortUrl);
             return Ok(url);
         }
 
@@ -86,9 +82,9 @@ namespace UrlShortener.Controllers
         [HttpGet]
         [Route("{shortUrl}")]
         [AllowAnonymous]
-        public IActionResult RedirectUser([FromRoute] string shortUrl)
+        public async Task<IActionResult> RedirectUser([FromRoute] string shortUrl)
         {
-            var url = _urlService.UrlForRedirect(shortUrl);
+            var url = await _urlService.UrlForRedirect(shortUrl);
             return RedirectToAction("Index", "Redirect", new { url });
         }
     }

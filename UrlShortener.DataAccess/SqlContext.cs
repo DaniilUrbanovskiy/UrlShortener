@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.DataAccess

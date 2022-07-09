@@ -11,7 +11,7 @@ namespace UrlShortener.Api.Dto.Requests
         [Required]
         public string Password { get; set; }
         public string Name { get; set; }
-        [DataType(DataType.DateTime, ErrorMessage = "Incorrewct datetomne formday")]
+        [DataType(DataType.DateTime, ErrorMessage = "Incorrect date format")]
         public DateTime Birthday { get; set; }
         public string Email { get; set; }
 
@@ -19,11 +19,15 @@ namespace UrlShortener.Api.Dto.Requests
         {
             if (Birthday > DateTime.Now)
             {
-                yield return new ValidationResult("Birthday cant be in feature");
+                yield return new ValidationResult("Type correct date");
             }
             if (!Email.Contains("@"))
             {
-                yield return new ValidationResult("Incorrect rmail");
+                yield return new ValidationResult("Incorrect email");
+            }
+            if (Password.Length < 8)
+            {
+                yield return new ValidationResult("Min. password length - 8 symbols");
             }
         }
     }

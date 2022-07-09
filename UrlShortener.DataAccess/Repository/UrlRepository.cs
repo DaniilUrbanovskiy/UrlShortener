@@ -29,8 +29,8 @@ namespace UrlShortener.DataAccess.Repository
 
         public async Task<bool> IsExist(string longUrl)
         {
-            var a = await _context.Urls.AnyAsync(x => x.LongUrl == longUrl);
-            return a;
+            var result = await _context.Urls.AnyAsync(x => x.LongUrl == longUrl);
+            return result;
         }
 
         public async Task<Url> GetByShortUrl(string url)

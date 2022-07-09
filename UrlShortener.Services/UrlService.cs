@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using UrlShortener.DataAccess;
-using UrlShortener.DataAccess.Repository;
 using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.Services
@@ -77,7 +74,7 @@ namespace UrlShortener.Services
 
         public async Task<string> UrlForRedirect(string url) 
         {
-            var result = (await _unitOfWork.UrlRepository.GetByShortUrl(ShortUrlBaseAdress + url))?.LongUrl;
+            var result = (await _unitOfWork.UrlRepository.GetByShortUrl(url.Replace("%2F", "/")))?.LongUrl;
             return result;
         }
         
@@ -97,7 +94,7 @@ namespace UrlShortener.Services
             }
             catch (Exception)
             {
-                return null;//TODO: return exeption message
+                return null;
             }                    
         }
 
@@ -143,6 +140,5 @@ namespace UrlShortener.Services
             }
             await _unitOfWork.UserUrlRepository.Add(new UserUrl(userId, url.Id));
         }
-
     }
 }
