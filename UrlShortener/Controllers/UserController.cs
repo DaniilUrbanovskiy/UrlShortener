@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using UrlShortener.Api.Dto.Model;
 using UrlShortener.Api.Dto.Requests;
 using UrlShortener.Api.Dto.Responses;
 using UrlShortener.Api.Infrastructure;
@@ -37,7 +38,7 @@ namespace UrlShortener.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new WebServiceError(System.Net.HttpStatusCode.BadRequest, ex.Message));
             }
         }
 
@@ -56,7 +57,7 @@ namespace UrlShortener.Api.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new WebServiceError(System.Net.HttpStatusCode.BadRequest, ex.Message));
             }
         }
     }
