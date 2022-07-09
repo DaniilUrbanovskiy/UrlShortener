@@ -47,7 +47,8 @@ namespace UrlShortener.Api.Controllers
         {
             try
             {
-                var user = await _userService.Login(userInfo.Login, userInfo.Password);
+                var user = _mapper.Map<User>(userInfo);
+                user = await _userService.Login(user);
                 var tokenResponse = JwtHealper.CreateToken(user);
                 var token = new TokenResponse(new JwtSecurityTokenHandler().WriteToken(tokenResponse));
 

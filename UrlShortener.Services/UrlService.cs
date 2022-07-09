@@ -4,110 +4,81 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using UrlShortener.DataAccess;
+using UrlShortener.DataAccess.Repository;
 using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.Services
 {
     public class UrlService
     {
-        private readonly string ShortUrlBaseAdress = "https://shortener-test.azurewebsites.net/shortened/";//TODO: Move to appsettings.json
-        private readonly SqlContext _context;
-        public UrlService(SqlContext context)
+        private readonly string ShortUrlBaseAdress = AppsettingsProvider.GetJsonAppsettingsFile()["ConnectionStrings:ApiBaseAdress"];
+        private readonly UnitOfWork _unitOfWork;
+        public UrlService(UnitOfWork unitOfWork)
         {
-            _context = context;           
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task AddUrlsAuto(string url, int userId)
+        public async Task AddUrlsAuto(string originalUrl, int userId)
         {
-            string shortUrl = UrlConverter(url);          
-            if (String.IsNullOrEmpty(shortUrl)) 
+            var isAdded = await AddExistedUrlIfUserNotHave(originalUrl, userId);
+            if (isAdded)
             {
-                throw new ArgumentException("Wrong url!");    
+                return;
             }
-           
-            var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
-            await _context.Urls.AddAsync(new Url()
-            {
-                LongUrl = url,
-                CreateDate = DateTime.Now,
-                CreatedBy = userName,
-                ShortUrl = ShortUrlBaseAdress + shortUrl
-            });
-            await _context.SaveChangesAsync();
 
-            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
+            string shortUrl = UrlConverter(originalUrl);
+            if (String.IsNullOrEmpty(shortUrl))
             {
-                throw new ArgumentException("Url already exists in your table!");
-                //TODO: Remove url from [Urls] table 
+                throw new ArgumentException("Wrong url!");
             }
-            await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
-            await _context.SaveChangesAsync();            
+
+            await AddShortenedUrl(originalUrl, userId, shortUrl);
         }
 
-        public async Task AddUrlsByYourself(string url, string shortUrl, int userId)
+        public async Task AddUrlsByYourself(string originalUrl, string shortUrl, int userId)
         {
-            if (String.IsNullOrEmpty(shortUrl) || String.IsNullOrEmpty(url))
+            if (String.IsNullOrEmpty(shortUrl) || String.IsNullOrEmpty(originalUrl))
             {
                 throw new ArgumentException("Wrong url!");
             }
          
-            var userName = _context.Users.FirstOrDefault(x => x.Id == userId).Name;
-            await _context.Urls.AddAsync(new Url()
-            {
-                LongUrl = url,
-                CreateDate = DateTime.Now,
-                CreatedBy = userName,
-                ShortUrl = ShortUrlBaseAdress + shortUrl
-            });
-            await _context.SaveChangesAsync();
-
-            var urlId = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + shortUrl)?.Id;
-            if (_context.UserUrl.Any(x => x.UrlId == urlId && x.UserId == userId))
-            {
-                throw new ArgumentException("Url already exists in your table!");
-                //TODO: Remove url from [Urls] table 
-            }
-            await _context.UserUrl.AddAsync(new UserUrl(userId, (int)urlId));
-            await _context.SaveChangesAsync();
+            await AddShortenedUrl(originalUrl, userId, shortUrl);
         }
 
-        public List<Url> GetUserUrls(int userId)
+        public async Task<List<Url>> GetUserUrls(int userId)
         {
-            var urlIds = _context.UserUrl.Where(x => x.UserId == userId).Select(x => x.UrlId).ToList();
-            var urls = _context.Urls.Where(x => urlIds.Contains(x.Id)).ToList();
+            var urlsId = await _unitOfWork.UserUrlRepository.GetUserUrlsId(userId);
+            var urls = await _unitOfWork.UrlRepository.GetUrlsById(urlsId);
             return urls;
         }
 
-        public Url GetUrlInfo(string shortUrl)
+        public async Task<Url> GetUrlInfo(string shortUrl)
         {
-            var urlInfo = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl);
+            var urlInfo = await _unitOfWork.UrlRepository.GetByShortUrl(shortUrl);
             return urlInfo;
         }
 
-        public HttpStatusCode RemoveUrls(int userId, string shortUrl)//TODO: Change returned type
+        public async Task RemoveUrls(int userId, string shortUrl)
         {
-            try
-            {//TODO: Reomove try-catch block and validate with "if" conditions
-                var url = _context.Urls.FirstOrDefault(x => x.ShortUrl == shortUrl);
-                var userUrl = _context.UserUrl.FirstOrDefault(x => x.UrlId == url.Id && x.UserId == userId);
-
-                _context.UserUrl.Remove(userUrl);
-                _context.Urls.Remove(url);
-                //TODO: Add cascade delete
-                _context.SaveChanges();
-                return HttpStatusCode.OK;
-            }
-            catch (Exception)
+            var url = await _unitOfWork.UrlRepository.GetByShortUrl(shortUrl);
+            if (url == null)
             {
-                return HttpStatusCode.BadRequest;
-            }        
+                throw new ArgumentException("Wrong url");
+            }
+            var userUrl = await _unitOfWork.UserUrlRepository.GetBy(userId, url.Id);
+            await _unitOfWork.UserUrlRepository.Remove(userUrl);
+
+            var isUrlExistInUserUrl = await _unitOfWork.UserUrlRepository.IsExist(url.Id);
+            if (!isUrlExistInUserUrl)
+            {
+                await _unitOfWork.UrlRepository.Remove(url);
+            }
         }
 
-        public string UrlForRedirect(string url) 
+        public async Task<string> UrlForRedirect(string url) 
         {
-            var result = _context.Urls.FirstOrDefault(x => x.ShortUrl == ShortUrlBaseAdress + url)?.LongUrl;
-            return result;//TODO: Return "url" if result is null
+            var result = (await _unitOfWork.UrlRepository.GetByShortUrl(ShortUrlBaseAdress + url))?.LongUrl;
+            return result;
         }
         
         private string UrlConverter(string url) 
@@ -129,5 +100,49 @@ namespace UrlShortener.Services
                 return null;//TODO: return exeption message
             }                    
         }
+
+        private async Task<bool> AddExistedUrlIfUserNotHave(string originalUrl, int userId)
+        {
+            var longUrlExist = await _unitOfWork.UrlRepository.IsExist(originalUrl);
+
+            if (longUrlExist)
+            {
+                var url = await _unitOfWork.UrlRepository.GetByLongUrl(originalUrl);
+                var userUrlExist = await _unitOfWork.UserUrlRepository.IsExist(userId, url.Id);
+
+                if (userUrlExist)
+                {
+                    throw new Exception("Url already exists in your table!");
+                }
+                await _unitOfWork.UserUrlRepository.Add(new UserUrl(userId, url.Id));
+                return true;
+            }
+            return false;
+        }
+
+        private async Task AddShortenedUrl(string originalUrl, int userId, string shortUrl)
+        {
+            var userName = (await _unitOfWork.UserRepository.GetBy(userId)).Name;
+            if (!(await _unitOfWork.UrlRepository.IsExist(originalUrl)))
+            {
+                await _unitOfWork.UrlRepository.Add(new Url()
+                {
+                    LongUrl = originalUrl,
+                    CreateDate = DateTime.Now,
+                    CreatedBy = userName,
+                    ShortUrl = ShortUrlBaseAdress + shortUrl
+                });
+            }
+
+            var url = await _unitOfWork.UrlRepository.GetByLongUrl(originalUrl);
+            var userUrlExist = await _unitOfWork.UserUrlRepository.IsExist(userId, url.Id);
+
+            if (userUrlExist)
+            {
+                throw new ArgumentException("Url already exists in your table!");
+            }
+            await _unitOfWork.UserUrlRepository.Add(new UserUrl(userId, url.Id));
+        }
+
     }
 }

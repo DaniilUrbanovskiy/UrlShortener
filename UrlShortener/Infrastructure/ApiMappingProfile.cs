@@ -9,7 +9,7 @@ namespace UrlShortener.Api.Infrastructure
         public ApiMappingProfile()
         {
             CreateMap<UserRegistrRequest, User>();
-
+            CreateMap<UserLoginRequest, User>();
         }
     }
 }

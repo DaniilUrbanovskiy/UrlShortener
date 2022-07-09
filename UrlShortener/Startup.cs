@@ -7,6 +7,7 @@ using System.Linq;
 using UrlShortener.Api.Configurations;
 using UrlShortener.Api.Infrastructure;
 using UrlShortener.DataAccess;
+using UrlShortener.DataAccess.Repository;
 using UrlShortener.Services;
 
 namespace UrlShortener
@@ -19,6 +20,10 @@ namespace UrlShortener
             services.AddSwagger();
             services.AddTransient<UrlService>();
             services.AddTransient<UserService>();
+            services.AddScoped<UrlRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<UserUrlRepository>();
+            services.AddScoped<UnitOfWork>();
             services.AddDbContext<SqlContext>(x => x.UseSqlServer(Configuration.GetConnectionString("SqlContext")));
             services.AddJWTAuthorization(Configuration);
             services.AddAutoMapper(typeof(ApiMappingProfile));

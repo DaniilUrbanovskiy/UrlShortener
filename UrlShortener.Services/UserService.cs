@@ -1,43 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
-using UrlShortener.DataAccess;
+using UrlShortener.DataAccess.Repository;
 using UrlShortener.Domain.Entities;
 
 namespace UrlShortener.Services
 {
     public class UserService
     {
-        private readonly SqlContext _context;
-        public UserService(SqlContext context)
+        private readonly UserRepository _userRepository;
+        public UserService(UserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
         public async Task Registration(User user)
         {
-            var isExist = _context.Users.Any(u => u.Login == user.Login);
+            var isExist = await _userRepository.IsExist(user.Login);
 
             if (isExist == true)
             {
                 throw new Exception("This login already exists!");
             }
-            await _context.AddAsync(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.Add(user);
         }
 
-        public async Task<User> Login(string login, string password)
+        public async Task<User> Login(User user)
         {
-            var user = await _context.Users.Where(u => u.Login == login && u.Password == password).FirstOrDefaultAsync();
+            var response = await _userRepository.Get(user);
 
-            if (user == null)
+            if (response == null)
             {
                 throw new Exception("Invalid login or password");
             }
-            return user;
+            return response;
         }
     }
 }

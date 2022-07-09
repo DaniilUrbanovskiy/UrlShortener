@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using UrlShortener.Domain.Entities;
 using UrlShortener.Services;
 
 namespace UrlShortener.Controllers
@@ -16,15 +14,13 @@ namespace UrlShortener.Controllers
     [Route("[controller]")]
     public class ShortenedController : ControllerBase
     {
-        private readonly UserService _userService;//TODO: Remove what not used
         private readonly UrlService _urlService;
         private readonly IMapper _mapper;
 
-        public ShortenedController(UrlService urlService, IMapper mapper, UserService userService)
+        public ShortenedController(UrlService urlService, IMapper mapper)
         {
             _urlService = urlService;
             _mapper = mapper;
-            _userService = userService;
         }
 
         [HttpPost("SetAuto")]
@@ -58,10 +54,10 @@ namespace UrlShortener.Controllers
         }
 
         [HttpGet("GetUrls")]
-        public IActionResult GetUserUrls()
+        public async Task<IActionResult> GetUserUrls()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var urlList = _urlService.GetUserUrls(int.Parse(userId));
+            var urlList = await _urlService.GetUserUrls(int.Parse(userId));
             return Ok(urlList);
         }
 
@@ -73,18 +69,18 @@ namespace UrlShortener.Controllers
         }
 
         [HttpDelete("RemoveUrl")]
-        public IActionResult RemoveUrl(string shortUrl)
+        public async Task<IActionResult> RemoveUrl(string shortUrl)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var statusCode = _urlService.RemoveUrls(int.Parse(userId), shortUrl);
-            if (statusCode == HttpStatusCode.OK)
+            try
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                await _urlService.RemoveUrls(int.Parse(userId), shortUrl);
                 return Ok("Success!");
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest("Wrong url!");
-            }          
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
