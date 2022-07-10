@@ -8,7 +8,7 @@ namespace UrlShortener.Services
 {
     public class UrlService
     {
-        private readonly string ShortUrlBaseAdress = AppsettingsProvider.GetJsonAppsettingsFile()["ConnectionStrings:ApiBaseAdress"];
+        private readonly string shortUrlBaseAdress = AppsettingsProvider.GetJsonAppsettingsFile()["ConnectionStrings:ApiBaseAdress"];
         private readonly UnitOfWork _unitOfWork;
         public UrlService(UnitOfWork unitOfWork)
         {
@@ -74,7 +74,7 @@ namespace UrlShortener.Services
 
         public async Task<string> UrlForRedirect(string url) 
         {
-            var result = (await _unitOfWork.UrlRepository.GetByShortUrl(url.Replace("%2F", "/")))?.LongUrl;
+            var result = (await _unitOfWork.UrlRepository.GetByShortUrl(shortUrlBaseAdress + url.Replace("%2F", "/")))?.LongUrl;
             return result;
         }
         
@@ -127,7 +127,7 @@ namespace UrlShortener.Services
                     LongUrl = originalUrl,
                     CreateDate = DateTime.Now,
                     CreatedBy = userName,
-                    ShortUrl = ShortUrlBaseAdress + shortUrl
+                    ShortUrl = shortUrlBaseAdress + shortUrl
                 });
             }
 
